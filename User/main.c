@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "hl_hal_uart.h"
+#include "hl_drv_fatfs.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -35,6 +36,10 @@ int main(void)
 
     printf("bootloader start\r\n"); 
     
+    hl_drv_fatfs_read("1.txt");
+
+    hl_drv_fatfs_del_file("1.txt");
+
     printf("bootloader jump to app, start...\r\n");
 
 

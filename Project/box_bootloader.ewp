@@ -2090,6 +2090,12 @@
     <group>
         <name>Libarary</name>
         <file>
+            <name>$PROJ_DIR$\..\Libraries\FATFS\diskio.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Libraries\FATFS\ff.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\Libraries\n32l40x_std_periph_driver\src\misc.c</name>
         </file>
         <file>
@@ -2112,6 +2118,9 @@
         <name>User</name>
         <group>
             <name>driver</name>
+            <file>
+                <name>$PROJ_DIR$\..\User\Driver\Src\hl_drv_fatfs.c</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\User\Driver\Src\hl_drv_flash.c</name>
             </file>
