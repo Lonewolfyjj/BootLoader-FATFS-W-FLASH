@@ -353,6 +353,7 @@
                     <state>$PROJ_DIR$\..\User\Hal\Inc</state>
                     <state>$PROJ_DIR$\..\User</state>
                     <state>$PROJ_DIR$\..\Libraries\FATFS</state>
+                    <state>$PROJ_DIR$\..\User\Module\Inc</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2135,6 +2136,12 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\User\Hal\Src\hl_hal_uart_dbg.c</name>
+            </file>
+        </group>
+        <group>
+            <name>Module</name>
+            <file>
+                <name>$PROJ_DIR$\..\User\Module\Src\hl_mod_upgrade.c</name>
             </file>
         </group>
         <file>

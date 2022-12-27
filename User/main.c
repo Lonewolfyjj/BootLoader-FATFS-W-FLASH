@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "hl_hal_uart.h"
-#include "hl_drv_fatfs.h"
+#include "hl_mod_upgrade.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -28,7 +28,8 @@ static uint32_t JumpAddress;
 int main(void)
 {
     hl_hal_uart_dbg_init();
-    
+    hl_mod_upgrade_init();
+
     /* Configures the Internal High Speed oscillator */
     if(FLASH_HSICLOCK_DISABLE == FLASH_ClockInit()) {
         printf("HSI oscillator not yet ready\r\n");
@@ -36,18 +37,17 @@ int main(void)
 
     printf("bootloader start\r\n"); 
     
-    hl_drv_fatfs_read("1.txt");
-
-    hl_drv_fatfs_del_file("1.txt");
+    hl_mod_upgrade_start();
 
     printf("bootloader jump to app, start...\r\n");
 
 
     if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000) == 0x20000000) {  // 判断栈顶地址是否在ram中,然后跳转到app
       
-        hl_hal_uart_dbg_deinit();
         FLASH_Lock();
-
+        hl_hal_uart_dbg_deinit();
+        hl_mod_upgrade_deinit();
+        
         /* Jump to user application */
         JumpAddress         = *(__IO uint32_t*)(ApplicationAddress + 4);
         Jump_To_Application = (pFunction)JumpAddress;
