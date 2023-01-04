@@ -2090,12 +2090,15 @@
     </group>
     <group>
         <name>Libarary</name>
-        <file>
-            <name>$PROJ_DIR$\..\Libraries\FATFS\diskio.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\Libraries\FATFS\ff.c</name>
-        </file>
+        <group>
+            <name>FATFS</name>
+            <file>
+                <name>$PROJ_DIR$\..\Libraries\FATFS\diskio.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Libraries\FATFS\ff.c</name>
+            </file>
+        </group>
         <file>
             <name>$PROJ_DIR$\..\Libraries\n32l40x_std_periph_driver\src\misc.c</name>
         </file>
@@ -2104,6 +2107,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\Libraries\n32l40x_std_periph_driver\src\n32l40x_gpio.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\Libraries\n32l40x_std_periph_driver\src\n32l40x_iwdg.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\Libraries\n32l40x_std_periph_driver\src\n32l40x_rcc.c</name>
@@ -2131,6 +2137,9 @@
         </group>
         <group>
             <name>hal</name>
+            <file>
+                <name>$PROJ_DIR$\..\User\Hal\Src\hl_hal_boot_jump.c</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\User\Hal\Src\hl_hal_hard_spi.c</name>
             </file>

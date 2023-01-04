@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include "hl_hal_uart.h"
 #include "hl_mod_upgrade.h"
+#include "hl_hal_boot_jump.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -27,6 +28,13 @@ static uint32_t JumpAddress;
 
 int main(void)
 {
+    if (RCC_GetFlagStatus(RCC_CTRLSTS_FLAG_WWDGRSTF) != RESET)  //hl_note: 进入窗口看门狗中断重启则进行boot跳转
+    {
+        RCC_ClrFlag();
+        hl_hal_jump_to_boot();  //hl_note: 这里是进入DFU的方法
+    }
+    RCC_ClrFlag();
+
     hl_hal_uart_dbg_init();
     hl_mod_upgrade_init();
 
