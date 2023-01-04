@@ -41,6 +41,8 @@
 static uint8_t f_data_buffer[BUFFER_MAX_SIZE];  //读写缓冲区
 static FIL     fnew;  //文件操作对象
 
+static bool _upgrade_init_flag = false;
+
 /* Private function(only *.c)  -----------------------------------------------*/
 
 static void _upgrade_app_file_write(uint32_t file_size)
@@ -86,16 +88,26 @@ static void _upgrade_app_file_write(uint32_t file_size)
 int hl_mod_upgrade_init()
 {
     int ret;
+    if (_upgrade_init_flag == true) {
+        debug_printf("upgrade mod already inited!\r\n");
+        return UPGRADE_FUN_RET_OK;
+    }
     ret = hl_drv_fatfs_init();
     if (ret == FATFS_FUN_RET_ERR) {
         return UPGRADE_FUN_RET_ERR;
     }
+    _upgrade_init_flag = true;
     return UPGRADE_FUN_RET_OK;
 }
 
 int hl_mod_upgrade_deinit()
 {
     int ret;
+    if (_upgrade_init_flag == false) {
+        debug_printf("upgrade mod no init!\r\n");
+        return UPGRADE_FUN_RET_OK;
+    }
+
     ret = hl_drv_fatfs_deinit();
     if (ret == FATFS_FUN_RET_ERR) {
         return UPGRADE_FUN_RET_ERR;
@@ -107,10 +119,15 @@ int hl_mod_upgrade_start()
 {
     int file_size = 0;
 
+    if (_upgrade_init_flag == false) {
+        debug_printf("upgrade mod no init!\r\n");
+        return UPGRADE_FUN_RET_ERR;
+    }
+
     file_size = hl_drv_fatfs_get_file_size(UPGRADE_FILE_NAME);
     
     debug_printf("--文件大小为：%d\r\n", file_size);
-    if (file_size == -1) {
+    if (file_size <= 0) {
         return UPGRADE_FUN_RET_ERR; //file no exist or file name invaild
     }
 
