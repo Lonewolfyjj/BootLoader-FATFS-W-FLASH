@@ -43,6 +43,8 @@
 //#define W25XXX_ID               0xef4016    //W25Q32
 #define W25XXX_ID               0xc84017    //GD25LQ64
 
+#define FALSH_USE_OFFSET_SIZE   0x1000  //使用外部FALSH时偏移位置的大小，这里是偏移一个扇区，也就是4096个字节
+
 #define FLASH_RET_OK            0
 #define FLASH_RET_ERR           1
 

@@ -18,6 +18,7 @@
 #define DEV_MMC		1	/* Example: Map MMC/SD card to physical drive 1 */
 #define DEV_USB		2	/* Example: Map USB MSD to physical drive 2 */
 
+#define DEV_FLASH_OFFSET	(FALSH_USE_OFFSET_SIZE / 4096)
 
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
@@ -68,10 +69,10 @@ DSTATUS disk_initialize (
 	case DEV_FLASH :
 		//result = RAM_disk_initialize();
 		// translate the reslut code here
-		if (hl_drv_flash_init() != FLASH_RET_OK) {
-			printf("[error] disk flash already init !\r\n");
-			return stat;
-    	}
+		// if (hl_drv_flash_init() != FLASH_RET_OK) {
+		// 	printf("[error] disk flash already init !\r\n");
+		// 	return stat;
+    	// }
 
 		return stat;
 
@@ -112,7 +113,7 @@ DRESULT disk_read (
 		// translate the arguments here
 		//result = RAM_disk_read(buff, sector, count);
 		// translate the reslut code here
-		sector++;
+		sector += DEV_FLASH_OFFSET;
 		
 		for(;count > 0;count--)
 		{										    
@@ -166,7 +167,7 @@ DRESULT disk_write (
 		// translate the arguments here
 		//result = RAM_disk_write(buff, sector, count);
 		// translate the reslut code here
-		sector++;
+		sector += DEV_FLASH_OFFSET;
 
 		
 		for(;count > 0;count--)
@@ -234,7 +235,7 @@ DRESULT disk_ioctl (
 			// break;  
 			/* 扇区数量：3584*4096/1024/1024=14(MB) */
 			case GET_SECTOR_COUNT: // FLASH_SECTOR_SIZE - 512 
-			*(DWORD * )buff = 1023;
+			*(DWORD * )buff = 2048 - DEV_FLASH_OFFSET;
 			break;
 			/* 扇区大小  */
 			case GET_SECTOR_SIZE :
