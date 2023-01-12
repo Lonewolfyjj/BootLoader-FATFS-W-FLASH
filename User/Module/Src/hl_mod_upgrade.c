@@ -25,16 +25,13 @@
 
 #include "hl_mod_upgrade.h"
 #include "hl_drv_internal_flash.h"
+#include "hl_drv_flash.h"
 
 /* typedef -------------------------------------------------------------------*/
 /* define --------------------------------------------------------------------*/
 
-#define UPGRADE_BOX_APP_ADDRESS 0x08004000  //BOX的APP运行地址
 #define BUFFER_MAX_SIZE         2048        //缓冲区最大值
 #define debug_printf printf
-
-//#define UPGRADE_FILE_NAME "12345678.txt"
-#define UPGRADE_FILE_NAME "A6902Box.bin"
 
 /* variables -----------------------------------------------------------------*/
 
@@ -83,6 +80,26 @@ static void _upgrade_app_file_write(uint32_t file_size)
     }
 }
 
+static int _upgrade_file_check()
+{
+    int file_size = 0;
+
+    file_size = hl_drv_fatfs_get_file_size(UPGRADE_FILE_NAME);
+
+    debug_printf("--文件大小为：%d\r\n", file_size);
+    if (file_size <= 0 || file_size >= UPGRADE_FILE_MAX_SIZE) {
+        return UPGRADE_FUN_RET_ERR;  //file no exist or file name invaild
+    }
+
+    hl_drv_fatfs_open(&fnew, UPGRADE_FILE_NAME, FA_READ);
+
+    _upgrade_app_file_write(file_size);
+
+    hl_drv_fatfs_close(&fnew);
+
+    return UPGRADE_FUN_RET_OK;
+}
+
 /* Exported functions --------------------------------------------------------*/
 
 int hl_mod_upgrade_init()
@@ -92,6 +109,12 @@ int hl_mod_upgrade_init()
         debug_printf("upgrade mod already inited!\r\n");
         return UPGRADE_FUN_RET_OK;
     }
+    ret = hl_drv_flash_init();
+    if (ret == FLASH_RET_ERR) {
+        debug_printf("[error] flash init failed!\r\n");
+        return UPGRADE_FUN_RET_ERR;
+    }
+
     ret = hl_drv_fatfs_init();
     if (ret == FATFS_FUN_RET_ERR) {
         return UPGRADE_FUN_RET_ERR;
@@ -112,6 +135,9 @@ int hl_mod_upgrade_deinit()
     if (ret == FATFS_FUN_RET_ERR) {
         return UPGRADE_FUN_RET_ERR;
     }
+
+    hl_drv_flash_deinit();
+
     return UPGRADE_FUN_RET_OK;
 }
 
@@ -124,18 +150,7 @@ int hl_mod_upgrade_start()
         return UPGRADE_FUN_RET_ERR;
     }
 
-    file_size = hl_drv_fatfs_get_file_size(UPGRADE_FILE_NAME);
-    
-    debug_printf("--文件大小为：%d\r\n", file_size);
-    if (file_size <= 0) {
-        return UPGRADE_FUN_RET_ERR; //file no exist or file name invaild
-    }
-
-    hl_drv_fatfs_open(&fnew, UPGRADE_FILE_NAME, FA_READ);
-    
-    _upgrade_app_file_write(file_size);
-
-    hl_drv_fatfs_close(&fnew);
+    _upgrade_file_check();
 
     hl_drv_fatfs_del_file(UPGRADE_FILE_NAME);
 

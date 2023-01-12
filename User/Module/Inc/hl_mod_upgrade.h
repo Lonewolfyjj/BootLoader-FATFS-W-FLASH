@@ -32,6 +32,13 @@
 /* typedef -------------------------------------------------------------------*/
 /* define --------------------------------------------------------------------*/
 
+#define UPGRADE_BOX_APP_ADDRESS 0x08004000  //BOX的APP运行地址
+
+#define UPGRADE_FILE_MAX_SIZE   102400      //升级文件大小最大值，100KB
+
+//#define UPGRADE_FILE_NAME "12345678.txt"  //文件名长度最多8个字符，超过会无效
+#define UPGRADE_FILE_NAME "A6902Box.bin"
+
 #define UPGRADE_FUN_RET_ERR     -1
 #define UPGRADE_FUN_RET_OK      0
 

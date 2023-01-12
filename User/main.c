@@ -24,37 +24,14 @@ static uint32_t JumpAddress;
 
 /* Private  functions ---------------------------------------------------------*/
 
-/* Exported functions --------------------------------------------------------*/
-
-int main(void)
+static void jump_to_app_run()
 {
-    if (RCC_GetFlagStatus(RCC_CTRLSTS_FLAG_WWDGRSTF) != RESET)  //hl_note: 进入窗口看门狗中断重启则进行boot跳转
-    {
-        RCC_ClrFlag();
-        hl_hal_jump_to_boot();  //hl_note: 这里是进入DFU的方法
-    }
-
-    hl_hal_uart_dbg_init();
-    hl_mod_upgrade_init();
-
-    /* Configures the Internal High Speed oscillator */
-    if(FLASH_HSICLOCK_DISABLE == FLASH_ClockInit()) {
-        printf("HSI oscillator not yet ready\r\n");
-    }
-
-    printf("bootloader start\r\n"); 
-    
-    hl_mod_upgrade_start();
-
-    printf("bootloader jump to app, start...\r\n");
-
-
     if (((*(__IO uint32_t*)ApplicationAddress) & 0x2FFE0000) == 0x20000000) {  // 判断栈顶地址是否在ram中,然后跳转到app
-      
+
         FLASH_Lock();
-        hl_hal_uart_dbg_deinit();
         hl_mod_upgrade_deinit();
-        
+        hl_hal_uart_dbg_deinit();
+
         /* Jump to user application */
         JumpAddress         = *(__IO uint32_t*)(ApplicationAddress + 4);
         Jump_To_Application = (pFunction)JumpAddress;
@@ -62,6 +39,39 @@ int main(void)
         __set_MSP(*(__IO uint32_t*)ApplicationAddress);
         Jump_To_Application();
     }
+}
+
+/* Exported functions --------------------------------------------------------*/
+
+int main(void)
+{
+    uint8_t ret;
+    if (RCC_GetFlagStatus(RCC_CTRLSTS_FLAG_WWDGRSTF) != RESET)  //hl_note: 进入窗口看门狗中断重启则进行boot跳转
+    {
+        RCC_ClrFlag();
+        hl_hal_jump_to_boot();  //hl_note: 这里是进入DFU的方法
+    }
+
+    hl_hal_uart_dbg_init();
+
+    ret = hl_mod_upgrade_init();
+    if (UPGRADE_FUN_RET_OK == ret) {
+
+        /* Configures the Internal High Speed oscillator */
+        if (FLASH_HSICLOCK_DISABLE == FLASH_ClockInit()) {
+            printf("HSI oscillator not yet ready\r\n");
+        }
+
+        printf("bootloader start\r\n");
+
+        hl_mod_upgrade_start();
+
+    } else {
+        printf("!!! upgrade failed !!!\r\n");
+    }
+
+    printf("bootloader jump to app, start...\r\n");
+    jump_to_app_run();
 
     return 0;
 }
