@@ -33,7 +33,6 @@ int main(void)
         RCC_ClrFlag();
         hl_hal_jump_to_boot();  //hl_note: 这里是进入DFU的方法
     }
-    RCC_ClrFlag();
 
     hl_hal_uart_dbg_init();
     hl_mod_upgrade_init();
